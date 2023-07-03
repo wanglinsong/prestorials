@@ -18,23 +18,27 @@ This is a sample setup to run a Presto cluster with 1 coordinator and 2 workers.
 ## Start a Presto cluster
 Open a terminal, and change into this directory, on the Swarm manager node.
     docker stack deploy presto -c docker-compose.yaml
+    
 This will start coordinator on the Swarm manager node.
+
     docker service scale presto_worker_1=1
     docker service scale presto_worker_2=1
+    
 This will start Presto workers on the Swarm worker nodes. Check cluster with the following commands
+
     docker stack ls
     docker service ls
     docker container ls
 
-The deployment resource reservations and limits are configured, so that each Presto worker can only run on a new Swarm
+The deployment resource `reservations` and `limits` are configured, so that each Presto worker can only run on a new Swarm
 worker node.
-You can monitor the logs of different containers in the terminal and Docker Desktop UI.
+You can monitor the logs of different containers in the terminal.
 
 ## Access Presto Web Console on Swarm manager node
     http://127.0.0.1:8080
 
 ## Run Presto CLI on Swarm manager node
-    /opt/presto-cli --server http://10.18.0.8:8080
+    /opt/presto-cli --server http://127.0.0.1:8080
 
 ## Stop and delete the cluster
     docker stack rm presto
