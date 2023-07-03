@@ -8,22 +8,25 @@ networks:
 
 services:
   coordinator:
-    container_name: coordinator
     image: prestodb/presto:0.282
     restart: always
     deploy:
       resources:
         limits:
-          memory: 2G
+          cpus: '1.8'
+          memory: 7.5G
+        reservations:
+          cpus: '1.2'
+          memory: 6G
     ports:
       - 8080:8080
     volumes:
-      - ./coordinator/config.properties:/opt/presto-server/etc/config.properties
-      - ./coordinator/jvm.config:/opt/presto-server/etc/jvm.config
-      - ./coordinator/node.properties:/opt/presto-server/etc/node.properties
-      - ./catalog/jmx.properties:/opt/presto-server/etc/catalog/jmx.properties
-      - ./catalog/tpcds.properties:/opt/presto-server/etc/catalog/tpcds.properties
-      - ./catalog/tpch.properties:/opt/presto-server/etc/catalog/tpch.properties
+      - /home/ubuntu/prestorials/docker-swarm/coordinator/config.properties:/opt/presto-server/etc/config.properties
+      - /home/ubuntu/prestorials/docker-swarm/coordinator/jvm.config:/opt/presto-server/etc/jvm.config
+      - /home/ubuntu/prestorials/docker-swarm/coordinator/node.properties:/opt/presto-server/etc/node.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/jmx.properties:/opt/presto-server/etc/catalog/jmx.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/tpcds.properties:/opt/presto-server/etc/catalog/tpcds.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/tpch.properties:/opt/presto-server/etc/catalog/tpch.properties
     environment:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -31,7 +34,6 @@ services:
       presto:
 
   worker_1:
-    container_name: worker_1
     image: prestodb/presto:0.282
     restart: always
     depends_on:
@@ -39,14 +41,18 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
+          cpus: '1.8'
+          memory: 7.5G
+        reservations:
+          cpus: '1.2'
+          memory: 6G
     volumes:
-      - ./workers/config.properties:/opt/presto-server/etc/config.properties
-      - ./workers/jvm.config:/opt/presto-server/etc/jvm.config
-      - ./workers/1/node.properties:/opt/presto-server/etc/node.properties
-      - ./catalog/jmx.properties:/opt/presto-server/etc/catalog/jmx.properties
-      - ./catalog/tpcds.properties:/opt/presto-server/etc/catalog/tpcds.properties
-      - ./catalog/tpch.properties:/opt/presto-server/etc/catalog/tpch.properties
+      - /home/ubuntu/prestorials/docker-swarm/workers/config.properties:/opt/presto-server/etc/config.properties
+      - /home/ubuntu/prestorials/docker-swarm/workers/jvm.config:/opt/presto-server/etc/jvm.config
+      - /home/ubuntu/prestorials/docker-swarm/workers/1/node.properties:/opt/presto-server/etc/node.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/jmx.properties:/opt/presto-server/etc/catalog/jmx.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/tpcds.properties:/opt/presto-server/etc/catalog/tpcds.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/tpch.properties:/opt/presto-server/etc/catalog/tpch.properties
     environment:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -54,7 +60,6 @@ services:
       presto:
   
   worker_2:
-    container_name: worker_2
     image: prestodb/presto:0.282
     restart: always
     depends_on:
@@ -62,27 +67,21 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
+          cpus: '1.8'
+          memory: 7.5G
+        reservations:
+          cpus: '1.2'
+          memory: 6G
     volumes:
-      - ./workers/config.properties:/opt/presto-server/etc/config.properties
-      - ./workers/jvm.config:/opt/presto-server/etc/jvm.config
-      - ./workers/2/node.properties:/opt/presto-server/etc/node.properties
-      - ./catalog/jmx.properties:/opt/presto-server/etc/catalog/jmx.properties
-      - ./catalog/tpcds.properties:/opt/presto-server/etc/catalog/tpcds.properties
-      - ./catalog/tpch.properties:/opt/presto-server/etc/catalog/tpch.properties
+      - /home/ubuntu/prestorials/docker-swarm/workers/config.properties:/opt/presto-server/etc/config.properties
+      - /home/ubuntu/prestorials/docker-swarm/workers/jvm.config:/opt/presto-server/etc/jvm.config
+      - /home/ubuntu/prestorials/docker-swarm/workers/2/node.properties:/opt/presto-server/etc/node.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/jmx.properties:/opt/presto-server/etc/catalog/jmx.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/tpcds.properties:/opt/presto-server/etc/catalog/tpcds.properties
+      - /home/ubuntu/prestorials/docker-swarm/catalog/tpch.properties:/opt/presto-server/etc/catalog/tpch.properties
     environment:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     networks:
       presto:
 
-  cli:
-    container_name: cli
-    image: prestodb/presto:0.282
-    depends_on:
-      - coordinator
-      - worker_1
-      - worker_2
-    entrypoint: "tail -f /dev/null"
-    networks:
-      presto:
