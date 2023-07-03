@@ -2,17 +2,14 @@ version: '3.8'
 
 networks:
   presto:
-    driver: bridge
     ipam:
       config:
         - subnet: 10.18.0.0/24
-          gateway: 10.18.0.1
 
 services:
   coordinator:
     container_name: coordinator
     image: prestodb/presto:0.282
-    platform: linux/amd64
     restart: always
     deploy:
       resources:
@@ -30,20 +27,12 @@ services:
     environment:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://10.18.0.8:8080"]
-      interval: 5m
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     networks:
       presto:
-        ipv4_address: 10.18.0.8
 
   worker_1:
     container_name: worker_1
     image: prestodb/presto:0.282
-    platform: linux/amd64
     restart: always
     depends_on:
       - coordinator
@@ -63,12 +52,10 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     networks:
       presto:
-        ipv4_address: 10.18.0.18
   
   worker_2:
     container_name: worker_2
     image: prestodb/presto:0.282
-    platform: linux/amd64
     restart: always
     depends_on:
       - coordinator
@@ -88,12 +75,10 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     networks:
       presto:
-        ipv4_address: 10.18.0.28
 
   cli:
     container_name: cli
     image: prestodb/presto:0.282
-    platform: linux/amd64
     depends_on:
       - coordinator
       - worker_1
@@ -101,4 +86,3 @@ services:
     entrypoint: "tail -f /dev/null"
     networks:
       presto:
-        ipv4_address: 10.18.0.88
